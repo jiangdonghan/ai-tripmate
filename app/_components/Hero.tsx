@@ -39,7 +39,6 @@ function Hero() {
   const router = useRouter();
 
   const onSend = () => {
-    console.log("onSend", user);
     if (!user) {
       router.push("/sign-in");
       return;

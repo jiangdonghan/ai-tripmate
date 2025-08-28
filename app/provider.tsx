@@ -21,7 +21,6 @@ function Provider({ children }: { children: React.ReactNode }) {
       imageUrl: user?.imageUrl || "",
       email: user?.primaryEmailAddress?.emailAddress || "",
     });
-    console.log("res", res);
     setUserData(res);
   };
   return (
