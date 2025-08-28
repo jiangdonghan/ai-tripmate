@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import HeroVideoDialog from "@/components/magicui/hero-video-dialog";
 import { Button } from "@/components/ui/button";
@@ -35,20 +35,18 @@ const suggestions = [
 ];
 
 function Hero() {
+  const { user } = useUser();
+  const router = useRouter();
 
-    const {user} = useUser()
-    const router = useRouter()
-
-    const onSend = () => {
-        console.log('onSend', user)
-        if(!user) {
-            router.push('/sign-in')
-            return
-        }
-
-        // navigate to the chat page
-        
+  const onSend = () => {
+    console.log("onSend", user);
+    if (!user) {
+      router.push("/sign-in");
+      return;
     }
+
+    // navigate to the chat page
+  };
   return (
     <div className="flex items-center justify-center px-4 mt-40">
       <div className="max-w-4xl mx-auto text-center space-y-8">
@@ -82,7 +80,7 @@ function Hero() {
           <Button
             size={"icon"}
             className="absolute right-6 bottom-6 cursor-pointer"
-            onClick={onSend} 
+            onClick={onSend}
           >
             <Send className="w-4 h-4" />
           </Button>

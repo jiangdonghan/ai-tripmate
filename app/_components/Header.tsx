@@ -1,9 +1,10 @@
+"use client";
 import React from "react";
 
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {SignInButton} from "@clerk/nextjs";
+import { SignInButton, useUser } from "@clerk/nextjs";
 
 const menuOptions = [
   {
@@ -21,6 +22,7 @@ const menuOptions = [
 ];
 
 function Header() {
+  const { user } = useUser();
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,13 +61,19 @@ function Header() {
             {/*    </Button>*/}
             {/*  </SignInButton>*/}
             {/*</Link>*/}
-            <SignInButton mode={"modal"}>
-
-            <Button className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-medium shadow-lg hover:shadow-xl transition-all duration-300">
-              Get Started
-            </Button>
-            </SignInButton>
-
+            {!user ? (
+              <SignInButton mode={"modal"}>
+                <Button className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-medium shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
+                  Get Started
+                </Button>
+              </SignInButton>
+            ) : (
+              <Link href="/new-trip">
+                <Button className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-medium shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer">
+                  Create a new trip
+                </Button>
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu button */}
