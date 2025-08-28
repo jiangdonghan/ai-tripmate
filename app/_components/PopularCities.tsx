@@ -22,37 +22,51 @@ const DummyContent = ({ destination }: { destination: string }) => {
   const contentData = {
     "Tokyo, Japan": {
       title: "Discover Tokyo's hidden gems",
-      description: "From traditional temples to futuristic districts, let AI guide you through Tokyo's unique blend of old and new. Experience authentic ramen, peaceful gardens, and vibrant nightlife.",
-      image: "https://images.unsplash.com/photo-1542051841857-5f90071e7989?q=80&w=2070&auto=format&fit=crop"
+      description:
+        "From traditional temples to futuristic districts, let AI guide you through Tokyo's unique blend of old and new. Experience authentic ramen, peaceful gardens, and vibrant nightlife.",
+      image:
+        "https://images.unsplash.com/photo-1542051841857-5f90071e7989?q=80&w=2070&auto=format&fit=crop",
     },
     "Paris, France": {
       title: "Experience Parisian elegance",
-      description: "Let AI craft your perfect Paris itinerary with iconic landmarks, charming cafes, and hidden courtyards. From the Eiffel Tower to Montmartre, discover the magic of the City of Light.",
-      image: "https://plus.unsplash.com/premium_photo-1661919210043-fd847a58522d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      description:
+        "Let AI craft your perfect Paris itinerary with iconic landmarks, charming cafes, and hidden courtyards. From the Eiffel Tower to Montmartre, discover the magic of the City of Light.",
+      image:
+        "https://plus.unsplash.com/premium_photo-1661919210043-fd847a58522d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
     "New York, USA": {
       title: "Explore the Big Apple",
-      description: "AI-powered NYC adventures from Times Square to Central Park. Discover world-class museums, diverse neighborhoods, and the city's legendary food scene.",
-      image: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=2070&auto=format&fit=crop"
+      description:
+        "AI-powered NYC adventures from Times Square to Central Park. Discover world-class museums, diverse neighborhoods, and the city's legendary food scene.",
+      image:
+        "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=2070&auto=format&fit=crop",
     },
     "Bali, Indonesia": {
       title: "Tropical paradise awaits",
-      description: "From pristine beaches to spiritual temples, let AI plan your Bali escape. Experience rice terraces, traditional dance, and world-class surfing spots.",
-      image: "https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?q=80&w=2070&auto=format&fit=crop"
+      description:
+        "From pristine beaches to spiritual temples, let AI plan your Bali escape. Experience rice terraces, traditional dance, and world-class surfing spots.",
+      image:
+        "https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?q=80&w=2070&auto=format&fit=crop",
     },
     "Santorini, Greece": {
       title: "Mediterranean dreams",
-      description: "AI-curated Santorini experiences with stunning sunsets, white-washed buildings, and crystal-clear waters. Discover the perfect blend of romance and adventure.",
-      image: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?q=80&w=2070&auto=format&fit=crop"
+      description:
+        "AI-curated Santorini experiences with stunning sunsets, white-washed buildings, and crystal-clear waters. Discover the perfect blend of romance and adventure.",
+      image:
+        "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?q=80&w=2070&auto=format&fit=crop",
     },
     "Queenstown, NZ": {
       title: "Adventure capital calling",
-      description: "Thrilling Queenstown adventures planned by AI. From bungee jumping to wine tours, experience New Zealand's most exciting destination with personalized itineraries.",
-      image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070&auto=format&fit=crop"
-    }
+      description:
+        "Thrilling Queenstown adventures planned by AI. From bungee jumping to wine tours, experience New Zealand's most exciting destination with personalized itineraries.",
+      image:
+        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070&auto=format&fit=crop",
+    },
   };
 
-  const content = contentData[destination as keyof typeof contentData] || contentData["Tokyo, Japan"];
+  const content =
+    contentData[destination as keyof typeof contentData] ||
+    contentData["Tokyo, Japan"];
 
   return (
     <>
@@ -60,7 +74,7 @@ const DummyContent = ({ destination }: { destination: string }) => {
         return (
           <div
             key={"dummy-content" + index}
-            className="relative overflow-hidden bg-gradient-to-br from-card to-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6 md:p-8 shadow-lg hover:shadow-xl transition-all duration-300"
+            className="relative overflow-hidden bg-gradient-to-br from-card to-card/50 border border-border/50 rounded-2xl p-6 md:p-8 shadow-lg hover:shadow-xl transition-all duration-300"
           >
             <div className="flex flex-col lg:flex-row items-center gap-6">
               <div className="flex-1 space-y-4">
