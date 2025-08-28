@@ -43,6 +43,7 @@ function Hero() {
       router.push("/sign-in");
       return;
     }
+    router.push("/new-trip");
 
     // navigate to the chat page
   };
