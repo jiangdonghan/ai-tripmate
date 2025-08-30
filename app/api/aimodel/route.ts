@@ -93,7 +93,7 @@ interface TripInfo {
     };
   }
   
-Do not add, remove, or rename any keys. Do not explain. Only return valid JSON Please.
+Do not add, remove, or rename any keys. Do not explain. Only return valid JSON Please using the typescript object types above.
 
 ## Final Itinerary Response Format Example
 {

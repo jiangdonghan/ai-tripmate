@@ -38,6 +38,7 @@ function ChatBot({ onItineraryReady, onLoadingStateChange }: ChatBotProps) {
   const [userInput, setUserInput] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [currentUI, setCurrentUI] = useState("source");
+  const [isApiComplete, setIsApiComplete] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -48,37 +49,40 @@ function ChatBot({ onItineraryReady, onLoadingStateChange }: ChatBotProps) {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = async (isFinalStep = false) => {
+  const handleFinalStep = async () => {
+    try {
+      onLoadingStateChange(true);
+      
+      const response = await fetch('/api/aimodel', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ messages: [...messages], isFinalStep: true }),
+      });
 
+      if (!response.ok) {
+        throw new Error('Failed to get AI response');
+      }
 
-    if(isFinalStep) {
-         // Handle final step with itinerary data
-         const response = await fetch('/api/aimodel', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ messages: [...messages], isFinalStep }),
-          });
-  
-          if (!response.ok) {
-            throw new Error('Failed to get AI response');
-          }
-  
-          const data = await response.json();
-         
-            onLoadingStateChange(true);
-            
-            // Check if response includes itinerary data
-            if (data && data.itinerary) {
-              // Pass itinerary data to parent
-              setTimeout(() => {
-                onItineraryReady(data.itinerary);
-            }, 4800); // Wait for FinalStep loading animation to complete
-        }
+      const data = await response.json();
+      
+      // Check if response includes itinerary data
+      if (data && data.itinerary) {
+        // Pass itinerary data immediately when API responds
+        onItineraryReady(data.itinerary);
+        setIsApiComplete(true);
+      } else {
+        setIsApiComplete(true);
+      }
+    } catch (error) {
+      console.error('Error generating final itinerary:', error);
+      setIsApiComplete(true);
+      onLoadingStateChange(false);
     }
+  };
 
-
+  const handleSend = async () => {
     if (userInput.trim() && !isLoading) {
       const userMessage: Message = {
         id: Date.now().toString(),
@@ -96,7 +100,7 @@ function ChatBot({ onItineraryReady, onLoadingStateChange }: ChatBotProps) {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ messages: [...messages, userMessage], isFinalStep }),
+          body: JSON.stringify({ messages: [...messages, userMessage] }),
         });
 
         if (!response.ok) {
@@ -228,9 +232,11 @@ function ChatBot({ onItineraryReady, onLoadingStateChange }: ChatBotProps) {
   };
 
   useEffect(() => {
-    if (messages[messages.length - 1].ui === "final") {
-      console.log("Final step");
-      handleSend(true);
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage?.ui === "final" && lastMessage?.role === "assistant") {
+      console.log("Final step triggered");
+      setIsApiComplete(false); // Reset API state
+      handleFinalStep();
     }
   }, [messages]);
 
@@ -252,8 +258,11 @@ function ChatBot({ onItineraryReady, onLoadingStateChange }: ChatBotProps) {
         return <PreferencesInput onSubmit={(value) => handleGenerativeSubmit(value, "preferences")} />;
       case "final":
         return <FinalStep 
+          isApiComplete={isApiComplete}
           onComplete={() => {
-            // Loading animation completed - data should already be passed from handleSend
+            // Animation completed, stop loading
+            onLoadingStateChange(false);
+            setIsApiComplete(false); // Reset for next time
           }} 
         />;
       default:

@@ -5,9 +5,10 @@ import React, { useState, useEffect } from "react";
 
 interface FinalStepProps {
   onComplete: () => void;
+  isApiComplete?: boolean;
 }
 
-export default function FinalStep({ onComplete}: FinalStepProps) {
+export default function FinalStep({ onComplete, isApiComplete = false }: FinalStepProps) {
   const [loadingStep, setLoadingStep] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
 
@@ -27,16 +28,23 @@ export default function FinalStep({ onComplete}: FinalStepProps) {
         if (prev < loadingSteps.length - 1) {
           return prev + 1;
         } else {
-          setIsCompleted(true);
-          setTimeout(() => onComplete(), 1500);
+          // Don't auto-complete, wait for API
           clearInterval(timer);
           return prev;
         }
       });
-    }, 800);
+    }, 400); // Faster animation - 400ms per step
 
     return () => clearInterval(timer);
-  }, [onComplete]);
+  }, []);
+
+  // Complete when API is done
+  useEffect(() => {
+    if (isApiComplete && loadingStep >= loadingSteps.length - 1) {
+      setIsCompleted(true);
+      setTimeout(() => onComplete(), 500);
+    }
+  }, [isApiComplete, loadingStep, onComplete]);
 
   if (isCompleted) {
     return (
