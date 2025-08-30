@@ -121,7 +121,7 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
                     duration: 0.5,
                     delay: 0.2 * index,
                     ease: "easeOut",
-                    once: true,
+                    // once: true,
                   },
                 }}
                 key={"card" + index}
@@ -183,7 +183,7 @@ export const Card = ({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open]);
 
-  useOutsideClick(containerRef, () => handleClose());
+  useOutsideClick(containerRef as any, () => handleClose());
 
   const handleOpen = () => {
     setOpen(true);
@@ -204,7 +204,6 @@ export const Card = ({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="fixed inset-0 h-full w-full bg-black/80 backdrop-blur-lg"
-              className="fixed inset-0 h-full w-full bg-black/80"
             />
             <motion.div
               initial={{ opacity: 0 }}
