@@ -39,10 +39,8 @@ Along with your response, also send which UI component to display for generative
 - "final" - When generating the final itinerary
 - "other" - When asking for other information that is not in the list above
 
-
-## Final Output
-IMPORTANT: You must ALWAYS respond with a valid JSON object in this exact format (no markdown formatting, no extra text):
-
+## Regular Response Format
+For regular conversation, respond with:
 {
   "resp": "Your conversational response here",
   "ui": "source/destination/groupSize/budget/duration/final/other"
@@ -58,27 +56,106 @@ Do not include \`\`\`json or \`\`\` markers. Return ONLY the JSON object.
 
 Remember: Always be friendly, helpful, and excited about travel planning!`;
 
+const FINAL_PROMPT = `
+## Final Itinerary Response Format (STRICT)
+You must strictly return JSON in the following schema. 
+All values must be of type "string" (even numbers, days, times, or counts). Here is a sample typescript object types:
+
+
+
+interface TripInfo {
+    route: string;
+    duration: string;
+    travelers: string;
+  }
+  
+  interface Activity {
+    title: string;
+    description: string;
+    time: string;
+    icon: string;
+    type: 'flight' | 'hotel' | 'activity' | 'transport' | 'food';
+  }
+  
+  interface DayPlan {
+    day: number;
+    theme: string;
+    activities: Activity[];
+  }
+  
+  interface ItineraryData {
+    tripInfo: TripInfo;
+    days: DayPlan[];
+    summary: {
+      title: string;
+      description: string;
+      features: string[];
+    };
+  }
+  
+Do not add, remove, or rename any keys. Do not explain. Only return valid JSON Please.
+
+## Final Itinerary Response Format Example
+{
+  "resp": "string",
+  "ui": "string",
+  "itinerary": {
+    "tripInfo": {
+      "route": "string",
+      "duration": "string", 
+      "travelers": "string"
+    },
+    "days": [
+      {
+        "day": "string",
+        "theme": "string",
+        "activities": [
+          {
+            "title": "string",
+            "description": "string",
+            "time": "string",
+            "type": "string"
+          }
+        ]
+      }
+    ],
+    "summary": {
+      "title": "string",
+      "description": "string",
+      "features": ["string", "string", "string"]
+    }
+  }
+}
+Do not add, remove, or rename any keys. Do not explain. Only return valid JSON Please.
+
+`;
+
+
+
 export async function POST(req: NextRequest) {
     try {
-        const { messages } = await req.json();
+        const { messages, isFinalStep } = await req.json();
         const newMessages = messages.map((message: any) => ({
             role: message.role,
             content: message.content
         }));
         console.log("Messages:", newMessages);
+        console.log("Is Final Step:", isFinalStep);
         
+        // Add final instruction if it's the final step
+    
         const completion = await openai.chat.completions.create({
-            model: "deepseek/deepseek-chat-v3.1:free",
+            model: "openai/gpt-4o-mini",
             response_format: { type: "json_object" },
             messages: [
                 {
                     role: "system",
-                    content: SYSTEM_PROMPT
+                    content: isFinalStep ? FINAL_PROMPT : SYSTEM_PROMPT
                 },
                  ...newMessages
             ],
             temperature: 0.7,
-            max_tokens: 500
+            max_tokens: isFinalStep ? 2000 : 500
         });
 
         const aiResponse = completion.choices[0].message.content;

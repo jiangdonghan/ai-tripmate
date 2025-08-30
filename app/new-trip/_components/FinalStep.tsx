@@ -7,9 +7,10 @@ interface FinalStepProps {
   onComplete: () => void;
 }
 
-export default function FinalStep({ onComplete }: FinalStepProps) {
+export default function FinalStep({ onComplete}: FinalStepProps) {
   const [loadingStep, setLoadingStep] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
+
 
   const loadingSteps = [
     { text: "Analyzing your preferences...", icon: "🧠" },

@@ -48,7 +48,37 @@ function ChatBot({ onItineraryReady, onLoadingStateChange }: ChatBotProps) {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = async () => {
+  const handleSend = async (isFinalStep = false) => {
+
+
+    if(isFinalStep) {
+         // Handle final step with itinerary data
+         const response = await fetch('/api/aimodel', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ messages: [...messages], isFinalStep }),
+          });
+  
+          if (!response.ok) {
+            throw new Error('Failed to get AI response');
+          }
+  
+          const data = await response.json();
+         
+            onLoadingStateChange(true);
+            
+            // Check if response includes itinerary data
+            if (data && data.itinerary) {
+              // Pass itinerary data to parent
+              setTimeout(() => {
+                onItineraryReady(data.itinerary);
+            }, 4800); // Wait for FinalStep loading animation to complete
+        }
+    }
+
+
     if (userInput.trim() && !isLoading) {
       const userMessage: Message = {
         id: Date.now().toString(),
@@ -66,7 +96,7 @@ function ChatBot({ onItineraryReady, onLoadingStateChange }: ChatBotProps) {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ messages: [...messages, userMessage] }),
+          body: JSON.stringify({ messages: [...messages, userMessage], isFinalStep }),
         });
 
         if (!response.ok) {
@@ -105,6 +135,7 @@ function ChatBot({ onItineraryReady, onLoadingStateChange }: ChatBotProps) {
           role: 'assistant',
           ui: uiState
         };
+ 
 
         setMessages(prev => [...prev, aiMessage]);
       } catch (error) {
@@ -174,10 +205,6 @@ function ChatBot({ onItineraryReady, onLoadingStateChange }: ChatBotProps) {
       
       setCurrentUI(uiState);
       
-      // Notify parent about loading state for final step
-      if (uiState === "final") {
-        onLoadingStateChange(true);
-      }
       
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -200,6 +227,13 @@ function ChatBot({ onItineraryReady, onLoadingStateChange }: ChatBotProps) {
     }
   };
 
+  useEffect(() => {
+    if (messages[messages.length - 1].ui === "final") {
+      console.log("Final step");
+      handleSend(true);
+    }
+  }, [messages]);
+
   const renderGenerativeUI = (uiState: UIState | undefined) => {
     switch (uiState) {
       case "source":
@@ -217,71 +251,11 @@ function ChatBot({ onItineraryReady, onLoadingStateChange }: ChatBotProps) {
       case "preferences":
         return <PreferencesInput onSubmit={(value) => handleGenerativeSubmit(value, "preferences")} />;
       case "final":
-        return <FinalStep onComplete={() => {
-          // Simulate itinerary generation and pass data to parent
-          const mockItinerary = {
-            tripInfo: {
-              route: "Auckland → Queenstown",
-              duration: "5 Days",
-              travelers: "2 People"
-            },
-            days: [
-              {
-                day: 1,
-                theme: "Arrival & Orientation",
-                activities: [
-                  {
-                    title: "Flight from Auckland",
-                    description: "Morning arrival in Queenstown",
-                    time: "9:00 AM - 11:30 AM",
-                    icon: "✈️",
-                    type: "flight"
-                  },
-                  {
-                    title: "Hotel Check-in",
-                    description: "Downtown Queenstown accommodation",
-                    time: "2:00 PM onwards",
-                    icon: "🏨",
-                    type: "hotel"
-                  },
-                  {
-                    title: "City Orientation",
-                    description: "Walk around town center and waterfront",
-                    time: "4:00 PM - 6:00 PM",
-                    icon: "🚶",
-                    type: "activity"
-                  }
-                ]
-              },
-              {
-                day: 2,
-                theme: "Adventure Activities",
-                activities: [
-                  {
-                    title: "Milford Sound Day Trip",
-                    description: "Scenic drive and boat cruise through fiords",
-                    time: "Full day • 7:00 AM - 8:00 PM",
-                    icon: "🚢",
-                    type: "activity"
-                  },
-                  {
-                    title: "Evening Gondola",
-                    description: "Skyline Queenstown for sunset views",
-                    time: "6:00 PM - 8:00 PM",
-                    icon: "🚡",
-                    type: "activity"
-                  }
-                ]
-              }
-            ],
-            summary: {
-              title: "Your Adventure Awaits! ✈️",
-              description: "5 days of unforgettable experiences in New Zealand's adventure capital",
-              features: ["🏨 Accommodation included", "🚗 Transport arranged", "🎯 Activities booked"]
-            }
-          };
-          onItineraryReady(mockItinerary);
-        }} />;
+        return <FinalStep 
+          onComplete={() => {
+            // Loading animation completed - data should already be passed from handleSend
+          }} 
+        />;
       default:
         return null;
     }
@@ -397,7 +371,7 @@ function ChatBot({ onItineraryReady, onLoadingStateChange }: ChatBotProps) {
               </div>
             </div>
             <Button 
-              onClick={handleSend}
+              onClick={() => handleSend()}
               disabled={!userInput.trim() || isLoading}
               className="self-end bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white rounded-xl px-4 py-2 shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50"
             >
