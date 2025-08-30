@@ -8,20 +8,18 @@ import React, { useState, useRef, useEffect } from "react";
 interface Message {
   id: string;
   content: string;
-  sender: 'user' | 'ai';
-  timestamp: Date;
+  role: 'user' | 'assistant' | 'tool';
 }
 
 function ChatBot() {
-  const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
       content: "Hi! I'm your AI travel assistant. Tell me where you'd like to go and I'll help you create the perfect itinerary. You can ask me about destinations, activities, budget, or any travel preferences you have.",
-      sender: 'ai',
-      timestamp: new Date()
+      role: 'assistant'
     }
   ]);
+  const [userInput, setUserInput] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [currentUI, setCurrentUI] = useState("source");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -35,16 +33,15 @@ function ChatBot() {
   }, [messages]);
 
   const handleSend = async () => {
-    if (message.trim() && !isLoading) {
+    if (userInput.trim() && !isLoading) {
       const userMessage: Message = {
         id: Date.now().toString(),
-        content: message.trim(),
-        sender: 'user',
-        timestamp: new Date()
+        content: userInput.trim(),
+        role: 'user'
       };
 
       setMessages(prev => [...prev, userMessage]);
-      setMessage("");
+      setUserInput("");
       setIsLoading(true);
 
       try {
@@ -53,7 +50,7 @@ function ChatBot() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ message: userMessage.content }),
+          body: JSON.stringify({ messages: [...messages, userMessage] }),
         });
 
         if (!response.ok) {
@@ -65,9 +62,6 @@ function ChatBot() {
         // Handle both JSON and text responses
         let aiContent = "";
         let uiState = "source";
-        
-        console.log("API Response data:", data);
-        console.log("API Response type:", typeof data);
         
         if (typeof data === 'string') {
           // If response is a string, try to parse it as JSON
@@ -86,17 +80,13 @@ function ChatBot() {
           aiContent = "I'm sorry, I couldn't process your request. Please try again.";
         }
         
-        console.log("Extracted content:", aiContent);
-        console.log("Extracted UI state:", uiState);
-        
         // Update UI state
         setCurrentUI(uiState);
         
         const aiMessage: Message = {
           id: (Date.now() + 1).toString(),
           content: aiContent,
-          sender: 'ai',
-          timestamp: new Date()
+          role: 'assistant'
         };
 
         setMessages(prev => [...prev, aiMessage]);
@@ -105,8 +95,7 @@ function ChatBot() {
         const errorMessage: Message = {
           id: (Date.now() + 1).toString(),
           content: "I'm sorry, there was an error processing your request. Please try again.",
-          sender: 'ai',
-          timestamp: new Date()
+          role: 'assistant'
         };
         setMessages(prev => [...prev, errorMessage]);
       } finally {
@@ -135,9 +124,9 @@ function ChatBot() {
             <p className="text-sm text-muted-foreground">
               {isLoading ? "Thinking..." : "Ready to plan your perfect trip"}
             </p>
-            <p className="text-xs text-muted-foreground mt-1">
+            {/* <p className="text-xs text-muted-foreground mt-1">
               Current UI: {currentUI}
-            </p>
+            </p> */}
           </div>
         </div>
       </div>
@@ -145,20 +134,20 @@ function ChatBot() {
       {/* Chat Messages */}
       <div className="flex-1 overflow-y-auto p-6 space-y-4">
         {messages.map((msg) => (
-          <div key={msg.id} className={`flex gap-3 ${msg.sender === 'user' ? 'justify-end' : ''}`}>
-            {msg.sender === 'ai' && (
+          <div key={msg.id} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}>
+            {msg.role === 'assistant' && (
               <div className="w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-white font-bold text-xs">AI</span>
               </div>
             )}
             <div className={`rounded-2xl px-4 py-3 max-w-[80%] ${
-              msg.sender === 'user' 
+              msg.role === 'user' 
                 ? 'bg-primary text-primary-foreground rounded-tr-md' 
                 : 'bg-muted/50 rounded-tl-md'
             }`}>
               <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
             </div>
-            {msg.sender === 'user' && (
+            {msg.role === 'user' && (
               <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-white font-bold text-xs">U</span>
               </div>
@@ -189,8 +178,8 @@ function ChatBot() {
       <div className="p-6 border-t border-border bg-card/50">
         <div className="flex gap-3">
           <Textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Tell me about your dream trip..."
             className="flex-1 resize-none border-border focus:border-primary"
@@ -199,7 +188,7 @@ function ChatBot() {
           />
           <Button 
             onClick={handleSend}
-            disabled={!message.trim() || isLoading}
+            disabled={!userInput.trim() || isLoading}
             className="px-4 bg-primary hover:bg-primary/90 disabled:opacity-50"
           >
             <Send className="w-4 h-4" />

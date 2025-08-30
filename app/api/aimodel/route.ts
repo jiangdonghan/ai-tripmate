@@ -61,19 +61,22 @@ Remember: Always be friendly, helpful, and excited about travel planning!`;
 
 export async function POST(req: NextRequest) {
     try {
-        const { message } = await req.json();
+        const { messages } = await req.json();
+        const newMessages = messages.map((message: any) => ({
+            role: message.role,
+            content: message.content
+        }));
+        console.log("Messages:", newMessages);
         
         const completion = await openai.chat.completions.create({
-            model: "google/gemini-2.5-flash-image-preview:free",
+            model: "deepseek/deepseek-chat-v3.1:free",
+            response_format: { type: "json_object" },
             messages: [
                 {
                     role: "system",
                     content: SYSTEM_PROMPT
                 },
-                {
-                    role: "user",
-                    content: message
-                }
+                 ...newMessages
             ],
             temperature: 0.7,
             max_tokens: 500

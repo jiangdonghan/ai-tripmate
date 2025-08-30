@@ -6,7 +6,7 @@ import ChatBot from "./_components/ChatBot";
 
 function NewTrip() {
   return (
-    <div className="flex h-screen bg-background mt-16">
+    <div className="flex h-[calc(100vh-64px)] bg-background mt-16">
       {/* Left Side - Chat Interface */}
       <ChatBot />
 
