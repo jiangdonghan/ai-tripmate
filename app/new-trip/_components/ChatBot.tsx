@@ -4,8 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Send, Sparkles, MapPin, Globe } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
+import SourceInput from "./SourceInput";
+import DestinationInput from "./DestinationInput";
+import GroupSizeInput from "./GroupSizeInput";
+import BudgetInput from "./BudgetInput";
+import DurationInput from "./DurationInput";
+import InterestsInput from "./InterestsInput";
+import PreferencesInput from "./PreferencesInput";
 
-type UIState = "source" | "destination" | "groupSize" | "budget" | "duration" | "final";
+type UIState = "source" | "destination" | "groupSize" | "budget" | "duration" | "interests" | "preferences" | "final";
 
 interface Message {
   id: string;
@@ -115,20 +122,92 @@ function ChatBot() {
     }
   };
 
+  const handleGenerativeSubmit = async (value: any, uiType: string) => {
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      content: Array.isArray(value) ? value.join(", ") : value.toString(),
+      role: 'user'
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/aimodel', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ messages: [...messages, userMessage] }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get AI response');
+      }
+
+      const data = await response.json();
+      
+      let aiContent = "";
+      let uiState: UIState = "source";
+      
+      if (typeof data === 'string') {
+        try {
+          const parsedData = JSON.parse(data);
+          aiContent = parsedData.resp || data;
+          uiState = parsedData.ui || "source";
+        } catch {
+          aiContent = data;
+        }
+      } else if (data && typeof data === 'object') {
+        aiContent = data.resp || "I'm sorry, I couldn't process your request. Please try again.";
+        uiState = data.ui || "source";
+      } else {
+        aiContent = "I'm sorry, I couldn't process your request. Please try again.";
+      }
+      
+      setCurrentUI(uiState);
+      
+      const aiMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: aiContent,
+        role: 'assistant',
+        ui: uiState
+      };
+
+      setMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: "I'm sorry, there was an error processing your request. Please try again.",
+        role: 'assistant'
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const renderGenerativeUI = (uiState: UIState | undefined) => {
     switch (uiState) {
       case "source":
-        return null
+        return <SourceInput onSubmit={(value) => handleGenerativeSubmit(value, "source")} />;
       case "destination":
-        return <div>Destination</div>;
-        case "groupSize":
-        return <div>Group Size</div>;
+        return <DestinationInput onSubmit={(value) => handleGenerativeSubmit(value, "destination")} />;
+      case "groupSize":
+        return <GroupSizeInput onSubmit={(value) => handleGenerativeSubmit(value, "groupSize")} />;
       case "budget":
-        return <div>Budget</div>;
+        return <BudgetInput onSubmit={(value) => handleGenerativeSubmit(value, "budget")} />;
       case "duration":
-        return <div>Duration</div>;
+        return <DurationInput onSubmit={(value) => handleGenerativeSubmit(value, "duration")} />;
+      case "interests":
+        return <InterestsInput onSubmit={(value) => handleGenerativeSubmit(value, "interests")} />;
+      case "preferences":
+        return <PreferencesInput onSubmit={(value) => handleGenerativeSubmit(value, "preferences")} />;
       case "final":
-        return <div>Final</div>;
+        return <div className="mt-4 p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+          <p className="text-sm text-emerald-700 text-center">🎉 Perfect! I'm creating your personalized itinerary...</p>
+        </div>;
       default:
         return null;
     }
@@ -181,9 +260,8 @@ function ChatBot() {
                 {msg.role === 'assistant' && (
                   <div className="absolute -top-2 -left-2 w-4 h-4 bg-gradient-to-br from-primary to-accent rounded-full"></div>
                 )}
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}
-                    {renderGenerativeUI(msg?.ui)}
-                </p>
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                {msg.role === 'assistant' && msg.ui && renderGenerativeUI(msg.ui)}
               </div>
               <div className={`mt-2 text-xs text-muted-foreground ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
                 {msg.role === 'user' ? 'You' : 'TripMate AI'} • just now
