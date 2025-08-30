@@ -49,6 +49,79 @@ function ChatBot({ onItineraryReady, onLoadingStateChange }: ChatBotProps) {
     scrollToBottom();
   }, [messages]);
 
+  // Check for initial content from Hero page
+  useEffect(() => {
+    const tripInput = sessionStorage.getItem('tripInput');
+    if (tripInput) {
+      setUserInput(tripInput);
+      sessionStorage.removeItem('tripInput'); // Clean up
+      
+      // Auto-send after a short delay
+      setTimeout(() => {
+        const userMessage: Message = {
+          id: Date.now().toString(),
+          content: tripInput,
+          role: 'user'
+        };
+
+        setMessages(prev => [...prev, userMessage]);
+        setIsLoading(true);
+
+        // Send to AI
+        fetch('/api/aimodel', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ messages: [messages[0], userMessage] }),
+        })
+        .then(response => response.json())
+        .then(data => {
+          let aiContent = "";
+          let uiState: UIState = "source";
+          
+          if (typeof data === 'string') {
+            try {
+              const parsedData = JSON.parse(data);
+              aiContent = parsedData.resp || data;
+              uiState = parsedData.ui || "source";
+            } catch {
+              aiContent = data;
+            }
+          } else if (data && typeof data === 'object') {
+            aiContent = data.resp || "I'm sorry, I couldn't process your request. Please try again.";
+            uiState = data.ui || "source";
+          } else {
+            aiContent = "I'm sorry, I couldn't process your request. Please try again.";
+          }
+          
+          setCurrentUI(uiState);
+          
+          const aiMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            content: aiContent,
+            role: 'assistant',
+            ui: uiState
+          };
+
+          setMessages(prev => [...prev, aiMessage]);
+        })
+        .catch(error => {
+          console.error('Error sending message:', error);
+          const errorMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            content: "I'm sorry, there was an error processing your request. Please try again.",
+            role: 'assistant'
+          };
+          setMessages(prev => [...prev, errorMessage]);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+      }, 500); // Small delay for better UX
+    }
+  }, []);
+
   const handleFinalStep = async () => {
     try {
       onLoadingStateChange(true);

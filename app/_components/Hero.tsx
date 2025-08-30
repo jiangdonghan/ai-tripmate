@@ -13,7 +13,7 @@ import {
   Send,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 
 const suggestions = [
   {
@@ -37,15 +37,27 @@ const suggestions = [
 function Hero() {
   const { user } = useUser();
   const router = useRouter();
+  const [inputValue, setInputValue] = useState("");
 
-  const onSend = () => {
+  const navigateToTrip = (content: string) => {
     if (!user) {
       router.push("/sign-in");
       return;
     }
+    
+    // Store the content in sessionStorage to pass to new-trip page
+    sessionStorage.setItem('tripInput', content);
     router.push("/new-trip");
+  };
 
-    // navigate to the chat page
+  const onSend = () => {
+    if (inputValue.trim()) {
+      navigateToTrip(inputValue.trim());
+    }
+  };
+
+  const onSuggestionClick = (suggestion: string) => {
+    navigateToTrip(suggestion);
   };
   return (
     <div className="flex items-center justify-center px-4 mt-40">
@@ -74,8 +86,11 @@ function Hero() {
         {/* CTA Section */}
         <div className="space-y-6 border-2 border-gray-200 rounded-2xl p-4 relative">
           <Textarea
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
             placeholder="Generate a trip from auckland to queenstown"
             className="w-full h-28 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none resize-none"
+            onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && onSend()}
           />
           <Button
             size={"icon"}
@@ -91,6 +106,7 @@ function Hero() {
           {suggestions.map((suggestion, index) => (
             <div
               key={index}
+              onClick={() => onSuggestionClick(suggestion.title)}
               className="flex items-center gap-2 px-4 py-2 rounded-full bg-card/50 border border-border/50 hover:bg-card hover:border-border transition-all duration-200 cursor-pointer group"
             >
               <div
