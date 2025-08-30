@@ -11,6 +11,7 @@ import BudgetInput from "./BudgetInput";
 import DurationInput from "./DurationInput";
 import InterestsInput from "./InterestsInput";
 import PreferencesInput from "./PreferencesInput";
+import FinalStep from "./FinalStep";
 
 type UIState = "source" | "destination" | "groupSize" | "budget" | "duration" | "interests" | "preferences" | "final";
 
@@ -21,7 +22,12 @@ interface Message {
   ui?: UIState;
 }
 
-function ChatBot() {
+interface ChatBotProps {
+  onItineraryReady: (data: any) => void;
+  onLoadingStateChange: (isLoading: boolean) => void;
+}
+
+function ChatBot({ onItineraryReady, onLoadingStateChange }: ChatBotProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -123,9 +129,10 @@ function ChatBot() {
   };
 
   const handleGenerativeSubmit = async (value: any, uiType: string) => {
+    const rawContent  =  Array.isArray(value) ? value.join(", ") : value.toString();
     const userMessage: Message = {
       id: Date.now().toString(),
-      content: Array.isArray(value) ? value.join(", ") : value.toString(),
+      content: uiType === 'budget' ? rawContent + " in " + uiType: rawContent,
       role: 'user'
     };
 
@@ -167,6 +174,11 @@ function ChatBot() {
       
       setCurrentUI(uiState);
       
+      // Notify parent about loading state for final step
+      if (uiState === "final") {
+        onLoadingStateChange(true);
+      }
+      
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: aiContent,
@@ -205,9 +217,71 @@ function ChatBot() {
       case "preferences":
         return <PreferencesInput onSubmit={(value) => handleGenerativeSubmit(value, "preferences")} />;
       case "final":
-        return <div className="mt-4 p-4 bg-emerald-50 rounded-xl border border-emerald-200">
-          <p className="text-sm text-emerald-700 text-center">🎉 Perfect! I'm creating your personalized itinerary...</p>
-        </div>;
+        return <FinalStep onComplete={() => {
+          // Simulate itinerary generation and pass data to parent
+          const mockItinerary = {
+            tripInfo: {
+              route: "Auckland → Queenstown",
+              duration: "5 Days",
+              travelers: "2 People"
+            },
+            days: [
+              {
+                day: 1,
+                theme: "Arrival & Orientation",
+                activities: [
+                  {
+                    title: "Flight from Auckland",
+                    description: "Morning arrival in Queenstown",
+                    time: "9:00 AM - 11:30 AM",
+                    icon: "✈️",
+                    type: "flight"
+                  },
+                  {
+                    title: "Hotel Check-in",
+                    description: "Downtown Queenstown accommodation",
+                    time: "2:00 PM onwards",
+                    icon: "🏨",
+                    type: "hotel"
+                  },
+                  {
+                    title: "City Orientation",
+                    description: "Walk around town center and waterfront",
+                    time: "4:00 PM - 6:00 PM",
+                    icon: "🚶",
+                    type: "activity"
+                  }
+                ]
+              },
+              {
+                day: 2,
+                theme: "Adventure Activities",
+                activities: [
+                  {
+                    title: "Milford Sound Day Trip",
+                    description: "Scenic drive and boat cruise through fiords",
+                    time: "Full day • 7:00 AM - 8:00 PM",
+                    icon: "🚢",
+                    type: "activity"
+                  },
+                  {
+                    title: "Evening Gondola",
+                    description: "Skyline Queenstown for sunset views",
+                    time: "6:00 PM - 8:00 PM",
+                    icon: "🚡",
+                    type: "activity"
+                  }
+                ]
+              }
+            ],
+            summary: {
+              title: "Your Adventure Awaits! ✈️",
+              description: "5 days of unforgettable experiences in New Zealand's adventure capital",
+              features: ["🏨 Accommodation included", "🚗 Transport arranged", "🎯 Activities booked"]
+            }
+          };
+          onItineraryReady(mockItinerary);
+        }} />;
       default:
         return null;
     }

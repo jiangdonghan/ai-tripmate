@@ -41,31 +41,9 @@ export default function DurationInput({ onSubmit }: DurationInputProps) {
           <span className="font-medium text-sm text-foreground">How long is your trip?</span>
         </div>
         
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          {durationOptions.map((option) => (
-            <button
-              key={option.id}
-              onClick={() => setSelectedDuration(option.id)}
-              className={`p-3 rounded-xl border-2 transition-all duration-200 text-left ${
-                selectedDuration === option.id 
-                  ? `${option.color} border-current bg-current/10` 
-                  : 'bg-white/60 border-border/40 hover:bg-white hover:border-border/60'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-sm text-foreground">{option.label}</p>
-                  <p className="text-xs text-muted-foreground">{option.days}</p>
-                </div>
-                <Clock className={`w-4 h-4 ${selectedDuration === option.id ? 'text-current' : 'text-muted-foreground'}`} />
-              </div>
-            </button>
-          ))}
-        </div>
-
         <div className="mb-4">
           <label className="block text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wide">
-            Or enter exact number of days
+            Enter exact number of days
           </label>
           <div className="flex gap-2">
             <input
