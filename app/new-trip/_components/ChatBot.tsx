@@ -5,10 +5,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Send, Sparkles, MapPin, Globe } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 
+type UIState = "source" | "destination" | "groupSize" | "budget" | "duration" | "final";
+
 interface Message {
   id: string;
   content: string;
   role: 'user' | 'assistant' | 'tool';
+  ui?: UIState;
 }
 
 function ChatBot() {
@@ -61,7 +64,7 @@ function ChatBot() {
         
         // Handle both JSON and text responses
         let aiContent = "";
-        let uiState = "source";
+        let uiState : UIState = "source";
         
         if (typeof data === 'string') {
           // If response is a string, try to parse it as JSON
@@ -86,7 +89,8 @@ function ChatBot() {
         const aiMessage: Message = {
           id: (Date.now() + 1).toString(),
           content: aiContent,
-          role: 'assistant'
+          role: 'assistant',
+          ui: uiState
         };
 
         setMessages(prev => [...prev, aiMessage]);
@@ -108,6 +112,25 @@ function ChatBot() {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
+    }
+  };
+
+  const renderGenerativeUI = (uiState: UIState | undefined) => {
+    switch (uiState) {
+      case "source":
+        return null
+      case "destination":
+        return <div>Destination</div>;
+        case "groupSize":
+        return <div>Group Size</div>;
+      case "budget":
+        return <div>Budget</div>;
+      case "duration":
+        return <div>Duration</div>;
+      case "final":
+        return <div>Final</div>;
+      default:
+        return null;
     }
   };
 
@@ -150,7 +173,7 @@ function ChatBot() {
             )}
             
             <div className={`max-w-[75%] ${msg.role === 'user' ? 'order-1' : ''}`}>
-              <div className={`relative p-4 rounded-2xl shadow-sm border ${
+              <div className={`relative p-3 rounded-2xl shadow-sm border ${
                 msg.role === 'user' 
                   ? 'bg-gradient-to-br from-primary to-primary/90 text-primary-foreground border-primary/20 rounded-tr-md' 
                   : 'bg-white border-border/60 rounded-tl-md'
@@ -158,7 +181,9 @@ function ChatBot() {
                 {msg.role === 'assistant' && (
                   <div className="absolute -top-2 -left-2 w-4 h-4 bg-gradient-to-br from-primary to-accent rounded-full"></div>
                 )}
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}
+                    {renderGenerativeUI(msg?.ui)}
+                </p>
               </div>
               <div className={`mt-2 text-xs text-muted-foreground ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
                 {msg.role === 'user' ? 'You' : 'TripMate AI'} • just now

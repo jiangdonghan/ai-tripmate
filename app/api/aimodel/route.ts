@@ -37,16 +37,14 @@ Along with your response, also send which UI component to display for generative
 - "groupSize" - When asking for group size
 - "budget" - When asking for budget
 - "duration" - When asking for trip duration
-- "interests" - When asking for travel interests
-- "preferences" - When asking for special requirements
-- "Final" - When generating the final itinerary
+- "final" - When generating the final itinerary
 
 ## Final Output
 IMPORTANT: You must ALWAYS respond with a valid JSON object in this exact format (no markdown formatting, no extra text):
 
 {
   "resp": "Your conversational response here",
-  "ui": "source/destination/groupSize/budget/duration/interests/preferences/Final"
+  "ui": "source/destination/groupSize/budget/duration/final"
 }
 
 Do not include \`\`\`json or \`\`\` markers. Return ONLY the JSON object.
