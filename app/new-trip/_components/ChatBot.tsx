@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send } from "lucide-react";
+import { Send, Sparkles, MapPin, Globe } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 
 interface Message {
@@ -112,60 +112,85 @@ function ChatBot() {
   };
 
   return (
-    <div className="flex-1 flex flex-col border-r border-border">
-      {/* Chat Header */}
-      <div className="p-6 border-b border-border bg-card/50">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center">
-            <span className="text-white font-bold text-sm">AI</span>
+    <div className="flex-1 flex flex-col bg-gradient-to-b from-background via-background to-muted/20 border-r-2 border-border/30">
+      {/* Chat Header - Premium Design */}
+      <div className="relative p-6 bg-white/80 backdrop-blur-sm border-b border-border/60" style={{ minHeight: '104px' }}>
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5"></div>
+        <div className="relative flex items-center gap-4">
+          <div className="relative">
+            <div className="w-12 h-12 bg-gradient-to-br from-primary via-accent to-primary rounded-2xl flex items-center justify-center shadow-lg">
+              <Sparkles className="w-6 h-6 text-white" />
+            </div>
+            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white"></div>
           </div>
-          <div>
-            <h2 className="font-semibold text-lg">TripMate AI Assistant</h2>
-            <p className="text-sm text-muted-foreground">
-              {isLoading ? "Thinking..." : "Ready to plan your perfect trip"}
+          <div className="flex-1">
+            <h2 className="font-semibold text-xl text-foreground">TripMate AI</h2>
+            <p className="text-sm text-muted-foreground flex items-center gap-1">
+              <Globe className="w-3 h-3" />
+              {isLoading ? "Planning your adventure..." : "Ready to explore the world with you"}
             </p>
-            {/* <p className="text-xs text-muted-foreground mt-1">
-              Current UI: {currentUI}
-            </p> */}
+          </div>
+          <div className="text-right">
+            <div className="text-xs text-muted-foreground">Current step</div>
+            <div className="text-sm font-medium text-accent capitalize">{currentUI}</div>
           </div>
         </div>
       </div>
 
-      {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+      {/* Chat Messages - Modern Cards */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gradient-to-b from-transparent to-muted/10">
         {messages.map((msg) => (
-          <div key={msg.id} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}>
+          <div key={msg.id} className={`flex gap-4 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             {msg.role === 'assistant' && (
-              <div className="w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-xs">AI</span>
+              <div className="flex-shrink-0">
+                <div className="w-10 h-10 bg-gradient-to-br from-primary via-accent to-primary rounded-xl flex items-center justify-center shadow-md">
+                  <Sparkles className="w-5 h-5 text-white" />
+                </div>
               </div>
             )}
-            <div className={`rounded-2xl px-4 py-3 max-w-[80%] ${
-              msg.role === 'user' 
-                ? 'bg-primary text-primary-foreground rounded-tr-md' 
-                : 'bg-muted/50 rounded-tl-md'
-            }`}>
-              <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+            
+            <div className={`max-w-[75%] ${msg.role === 'user' ? 'order-1' : ''}`}>
+              <div className={`relative p-4 rounded-2xl shadow-sm border ${
+                msg.role === 'user' 
+                  ? 'bg-gradient-to-br from-primary to-primary/90 text-primary-foreground border-primary/20 rounded-tr-md' 
+                  : 'bg-white border-border/60 rounded-tl-md'
+              }`}>
+                {msg.role === 'assistant' && (
+                  <div className="absolute -top-2 -left-2 w-4 h-4 bg-gradient-to-br from-primary to-accent rounded-full"></div>
+                )}
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+              </div>
+              <div className={`mt-2 text-xs text-muted-foreground ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
+                {msg.role === 'user' ? 'You' : 'TripMate AI'} • just now
+              </div>
             </div>
+
             {msg.role === 'user' && (
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-xs">U</span>
+              <div className="flex-shrink-0 order-2">
+                <div className="w-10 h-10 bg-gradient-to-br from-muted-foreground to-muted-foreground/80 rounded-xl flex items-center justify-center shadow-md">
+                  <span className="text-white font-bold text-sm">U</span>
+                </div>
               </div>
             )}
           </div>
         ))}
         
-        {/* Loading indicator */}
+        {/* Premium Loading indicator */}
         {isLoading && (
-          <div className="flex gap-3">
-            <div className="w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-xs">AI</span>
+          <div className="flex gap-4 justify-start">
+            <div className="flex-shrink-0">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary via-accent to-primary rounded-xl flex items-center justify-center shadow-md">
+                <Sparkles className="w-5 h-5 text-white animate-pulse" />
+              </div>
             </div>
-            <div className="bg-muted/50 rounded-2xl rounded-tl-md px-4 py-3">
-              <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            <div className="bg-white border border-border/60 rounded-2xl rounded-tl-md p-4 shadow-sm">
+              <div className="flex items-center space-x-2">
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-accent/60 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                </div>
+                <span className="text-sm text-muted-foreground ml-2">Crafting your perfect trip...</span>
               </div>
             </div>
           </div>
@@ -174,25 +199,47 @@ function ChatBot() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Area */}
-      <div className="p-6 border-t border-border bg-card/50">
-        <div className="flex gap-3">
-          <Textarea
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Tell me about your dream trip..."
-            className="flex-1 resize-none border-border focus:border-primary"
-            rows={2}
-            disabled={isLoading}
-          />
-          <Button 
-            onClick={handleSend}
-            disabled={!userInput.trim() || isLoading}
-            className="px-4 bg-primary hover:bg-primary/90 disabled:opacity-50"
-          >
-            <Send className="w-4 h-4" />
-          </Button>
+      {/* Premium Input Area */}
+      <div className="p-6 bg-white/60 backdrop-blur-sm border-t border-border/60">
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5 rounded-2xl"></div>
+          <div className="relative flex gap-3 p-4 bg-white/80 rounded-2xl border border-border/40 shadow-lg">
+            <div className="flex-1 relative">
+              <Textarea
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Describe your dream destination, budget, or travel style..."
+                className="border-0 bg-transparent resize-none focus-visible:ring-0 placeholder:text-muted-foreground/60 text-sm leading-relaxed"
+                rows={2}
+                disabled={isLoading}
+              />
+              <div className="absolute bottom-2 left-2 flex items-center gap-1 text-xs text-muted-foreground/50">
+                <MapPin className="w-3 h-3" />
+                <span>Press Enter to send</span>
+              </div>
+            </div>
+            <Button 
+              onClick={handleSend}
+              disabled={!userInput.trim() || isLoading}
+              className="self-end bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white rounded-xl px-4 py-2 shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50"
+            >
+              <Send className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+        
+        {/* Quick suggestions */}
+        <div className="mt-4 flex flex-wrap gap-2">
+          {["🌏 Explore Asia", "🏖️ Beach getaway", "🏔️ Mountain adventure", "🍷 Wine tour"].map((suggestion, index) => (
+            <button
+              key={index}
+              onClick={() => setUserInput(suggestion.split(' ').slice(1).join(' '))}
+              className="px-3 py-1.5 text-xs bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground rounded-full border border-border/40 transition-colors duration-200"
+            >
+              {suggestion}
+            </button>
+          ))}
         </div>
       </div>
     </div>

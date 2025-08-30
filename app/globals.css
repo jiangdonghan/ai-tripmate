@@ -43,38 +43,38 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(0.98 0.005 220); /* Soft sky blue background */
-  --foreground: oklch(0.15 0.02 240); /* Deep navy text */
+  --radius: 0.75rem;
+  --background: oklch(0.99 0.002 220); /* Ultra-clean white with hint of blue */
+  --foreground: oklch(0.12 0.015 240); /* Rich charcoal text */
   --card: oklch(1 0 0); /* Pure white cards */
-  --card-foreground: oklch(0.15 0.02 240); /* Deep navy card text */
+  --card-foreground: oklch(0.12 0.015 240); /* Rich charcoal card text */
   --popover: oklch(1 0 0); /* Pure white popovers */
-  --popover-foreground: oklch(0.15 0.02 240); /* Deep navy popover text */
-  --primary: oklch(0.55 0.15 220); /* Travel blue - sky/ocean inspired */
-  --primary-foreground: oklch(0.98 0 0); /* White text on primary */
-  --secondary: oklch(0.92 0.03 45); /* Warm sand/beach tone */
-  --secondary-foreground: oklch(0.2 0.02 240); /* Dark text on secondary */
-  --muted: oklch(0.94 0.01 220); /* Very light blue-gray */
-  --muted-foreground: oklch(0.45 0.02 240); /* Medium blue-gray text */
-  --accent: oklch(0.7 0.12 160); /* Teal accent - adventure/exploration */
-  --accent-foreground: oklch(0.98 0 0); /* White text on accent */
-  --destructive: oklch(0.6 0.2 15); /* Warm red for errors */
-  --border: oklch(0.9 0.01 220); /* Light blue-gray borders */
-  --input: oklch(0.96 0.01 220); /* Light input backgrounds */
-  --ring: oklch(0.55 0.15 220); /* Primary blue focus rings */
-  --chart-1: oklch(0.6 0.15 220); /* Sky blue */
-  --chart-2: oklch(0.65 0.12 160); /* Teal */
-  --chart-3: oklch(0.7 0.1 45); /* Warm gold */
-  --chart-4: oklch(0.55 0.1 300); /* Purple accent */
-  --chart-5: oklch(0.75 0.08 90); /* Fresh green */
-  --sidebar: oklch(0.96 0.01 220); /* Light sidebar */
-  --sidebar-foreground: oklch(0.2 0.02 240); /* Dark sidebar text */
-  --sidebar-primary: oklch(0.55 0.15 220); /* Primary blue in sidebar */
-  --sidebar-primary-foreground: oklch(0.98 0 0); /* White sidebar primary text */
-  --sidebar-accent: oklch(0.92 0.03 45); /* Sand accent in sidebar */
-  --sidebar-accent-foreground: oklch(0.2 0.02 240); /* Dark sidebar accent text */
-  --sidebar-border: oklch(0.9 0.01 220); /* Light sidebar borders */
-  --sidebar-ring: oklch(0.55 0.15 220); /* Primary blue sidebar rings */
+  --popover-foreground: oklch(0.12 0.015 240); /* Rich charcoal popover text */
+  --primary: oklch(0.45 0.18 220); /* Premium travel blue - deeper, more sophisticated */
+  --primary-foreground: oklch(0.99 0 0); /* Pure white text on primary */
+  --secondary: oklch(0.95 0.02 45); /* Subtle warm cream */
+  --secondary-foreground: oklch(0.15 0.02 240); /* Dark text on secondary */
+  --muted: oklch(0.96 0.008 220); /* Very subtle blue-tinted gray */
+  --muted-foreground: oklch(0.42 0.015 240); /* Sophisticated gray text */
+  --accent: oklch(0.58 0.15 180); /* Premium teal - more vibrant */
+  --accent-foreground: oklch(0.99 0 0); /* White text on accent */
+  --destructive: oklch(0.55 0.22 25); /* Refined coral red */
+  --border: oklch(0.92 0.008 220); /* Subtle blue-gray borders */
+  --input: oklch(0.97 0.005 220); /* Clean input backgrounds */
+  --ring: oklch(0.45 0.18 220); /* Primary blue focus rings */
+  --chart-1: oklch(0.52 0.18 220); /* Premium blue */
+  --chart-2: oklch(0.58 0.15 180); /* Premium teal */
+  --chart-3: oklch(0.65 0.12 45); /* Warm gold */
+  --chart-4: oklch(0.48 0.12 280); /* Premium purple */
+  --chart-5: oklch(0.55 0.12 140); /* Fresh emerald */
+  --sidebar: oklch(0.98 0.005 220); /* Light sidebar */
+  --sidebar-foreground: oklch(0.15 0.02 240); /* Dark sidebar text */
+  --sidebar-primary: oklch(0.45 0.18 220); /* Primary blue in sidebar */
+  --sidebar-primary-foreground: oklch(0.99 0 0); /* White sidebar primary text */
+  --sidebar-accent: oklch(0.95 0.02 45); /* Cream accent in sidebar */
+  --sidebar-accent-foreground: oklch(0.15 0.02 240); /* Dark sidebar accent text */
+  --sidebar-border: oklch(0.92 0.008 220); /* Subtle sidebar borders */
+  --sidebar-ring: oklch(0.45 0.18 220); /* Primary blue sidebar rings */
 }
 
 .dark {
